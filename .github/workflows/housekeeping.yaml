@@ -1,0 +1,42 @@
+name: housekeeping
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '*/30 * * * *' # every 30 minutes
+
+jobs:
+  sync-forks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo:
+          # - name: devfile-registry
+          #   branch: main
+          # - name: devfile-registry-support
+          #   branch: main
+          # - name: devfile-api
+          #   branch: main
+          # - name: devfile-library
+          #   branch: main
+          # - name: openshift-release
+          #   branch: master
+          # - name: community-operators
+          #   branch: main
+          # - name: community-operators-prod
+          #   branch: main
+          # - name: kubernetes-community
+          #   branch: master
+          - name: hugo-theme-nix
+            branch: master
+    steps:
+      - name: sync-forks-${{ matrix.repo.name }}
+        uses: tgymnich/fork-sync@v1.8
+        with:
+          token: ${{ secrets.PERSONAL_TOKEN }}
+          repo: ${{ matrix.repo.name }}
+          merge_method: rebase
+          base: ${{ matrix.repo.branch }}
+          head: ${{ matrix.repo.branch }}
